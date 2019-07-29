@@ -1,5 +1,4 @@
 
-
 class Client:
     def __init__(self, id, addr):
         self.id = id               # player id

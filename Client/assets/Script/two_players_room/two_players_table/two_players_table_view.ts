@@ -2,6 +2,8 @@ const {ccclass, property} = cc._decorator;
 
 import TwoPlayersTableModel from "./two_players_table_model"
 import { PlayerStatus } from "../../common/player_status"
+import Card from "../../common/cards/card"
+import CardHeap from "../../common/cards/cardheap";
 
 @ccclass
 export default class TwoPlayersTableView extends cc.Component {
@@ -9,7 +11,7 @@ export default class TwoPlayersTableView extends cc.Component {
     private btnLeave: cc.Node = null
     private btnDeal:  cc.Node = null
     private btnPass:  cc.Node = null
-    private cardHeap: cc.Node = null
+    private cardHeap: CardHeap = null
     private txtCardHeapHeight: cc.Node = null
     private player1HandCards: cc.Node = null
     private player1PlayedCards: cc.Node = null
@@ -20,13 +22,15 @@ export default class TwoPlayersTableView extends cc.Component {
     private player2Status: cc.Node = null
     private player2Score: cc.Node = null
     private model: TwoPlayersTableModel = null
+    private roomInfo: cc.Node = null
 
     start () {
         this.initControlPanel()
         this.initPlayer1Area()
         this.initPlayer2Area()
         this.initCardHeap()
-        this.model = new TwoPlayersTableModel()
+        this.initRoomInfo()
+        this.model = new TwoPlayersTableModel(this)
     }
 
     initControlPanel()
@@ -74,12 +78,19 @@ export default class TwoPlayersTableView extends cc.Component {
 
     initCardHeap()
     {
-        this.cardHeap = this.node.getChildByName("cardheap")
-        this.txtCardHeapHeight = this.cardHeap.getChildByName("cards_left")
-        if (this.txtCardHeapHeight)
-        {
-            this.txtCardHeapHeight.getComponent(cc.Label).string = ""
-        }
+        this.cardHeap = new CardHeap(54)
+        this.cardHeap.setPosition(-430, 0)
+        this.node.addChild(this.cardHeap)
+    }
+
+    initRoomInfo()
+    {
+        this.roomInfo = this.node.getChildByName("roominfo")
+    }
+
+    updateRoomInfo(roomId: number)
+    {
+        this.roomInfo.getChildByName("roomid").getComponent(cc.Label).string = `RoomId: ${roomId}`
     }
 
     ready()
@@ -90,12 +101,10 @@ export default class TwoPlayersTableView extends cc.Component {
             if (this.model.getPlayer1Status() == PlayerStatus.None)
             {
                 this.model.setPlayer1Status(PlayerStatus.Ready)
-                label.string = "准备"
                 this.model.tellServerPlayer1Ready()
             }
             else {
                 this.model.setPlayer1Status(PlayerStatus.None)
-                label.string = ""
                 this.model.tellServerPlayer1NotReady()
             }
         }
@@ -108,8 +117,54 @@ export default class TwoPlayersTableView extends cc.Component {
     }
 
     deal()
-    {}
+    {
+        this.model.deal()
+        this.model.setPlayer1Status(PlayerStatus.Deal)
+    }
 
     pass()
-    {}
+    {
+        this.model.pass()
+        this.model.setPlayer1Status(PlayerStatus.Pass)
+    }
+
+    gameStart()
+    {
+        this.btnReady.active = false
+        this.btnLeave.active = false
+        this.btnDeal.active = true
+        this.btnPass.active = true
+        this.model.setPlayer1Status(PlayerStatus.None)
+    }
+
+    gameOver()
+    {
+        this.btnReady.active = true
+        this.btnLeave.active = true
+        this.btnDeal.active = false
+        this.btnPass.active = false
+        this.model.setPlayer1Status(PlayerStatus.None)
+    }
+
+    updatePlayer1Status(status: PlayerStatus)
+    {
+        switch(status)
+        {
+            case PlayerStatus.Ready: this.player1Status.getComponent(cc.Label).string = "准备"; break;
+            case PlayerStatus.Deal: this.player1Status.getComponent(cc.Label).string = ""; break;
+            case PlayerStatus.Pass: this.player1Status.getComponent(cc.Label).string = "不要"; break;
+            default: this.player1Status.getComponent(cc.Label).string = ""; break;
+        }
+    }
+
+    updatePlayer2Status(status: PlayerStatus)
+    {
+        switch(status)
+        {
+            case PlayerStatus.Ready: this.player2Status.getComponent(cc.Label).string = "准备"; break;
+            case PlayerStatus.Deal: this.player2Status.getComponent(cc.Label).string = ""; break;
+            case PlayerStatus.Pass: this.player2Status.getComponent(cc.Label).string = "不要"; break;
+            default: this.player2Status.getComponent(cc.Label).string = ""; break;
+        }
+    }
 }
