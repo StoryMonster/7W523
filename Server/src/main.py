@@ -16,7 +16,7 @@ def received_message(client, server, message):
 
 def client_leave(client, server):
     global clientsManager
-    clientsManager.userOffline(client)
+    clientsManager.handle_user_offline(client)
 
 
 if __name__ == "__main__":

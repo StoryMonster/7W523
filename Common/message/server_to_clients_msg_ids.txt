@@ -8,3 +8,6 @@ PLAYER_SHOW_CARDS_IND   #游戏结束时，所有玩家明牌
 ROOM_INFO_IND           #玩家房间信息
 PLAYER_JOIN_ROOM_IND    #有其他玩家进入房间信息
 PLAYER_LEAVE_ROOM_IND   #有其他玩家离开房间信息
+PLAYER_READY_IND        #房间中有玩家准备
+PLAYER_NOT_READY_IND    #房间中有玩家取消准备
+CHANGE_DEAL_OWNER_IND   #切换出牌人

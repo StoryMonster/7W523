@@ -1,13 +1,13 @@
-from fsm_exceptions import FsmException
-from state import FsmState, FsmFinalState
-from event import FsmEvent
+from fsm.fsm_exceptions import FsmException
+from fsm.state import FsmState, FsmFinalState
 from collections import namedtuple
 import logging
 
 Transaction = namedtuple("Transaction", ["prev_state", "event", "next_state"])
 
 class FSM:
-    def __init__(self):
+    def __init__(self, context):
+        self.context = context
         self.state_transaction_table = []
         self.global_transaction_table = []
         self.current_state = None
@@ -27,14 +27,14 @@ class FSM:
         for transaction in self.global_transaction_table:
             if isinstance(event, transaction.event):
                 self.current_state = transaction.next_state()
-                self.current_state.enter(event)
+                self.current_state.enter(event, self)
                 self.clear_transaction_table()
                 return
         for transaction in self.state_transaction_table:
             if isinstance(self.current_state, transaction.prev_state) and isinstance(event, transaction.event):
-                self.current_state.leave()
+                self.current_state.exit(self.context)
                 self.current_state = transaction.next_state()
-                self.current_state.enter(event)
+                self.current_state.enter(event, self)
                 if isinstance(self.current_state, FsmFinalState):
                     self.clear_transaction_table()
                 return
@@ -43,63 +43,21 @@ class FSM:
     def clear_transaction_table(self):
         self.global_transaction_table = []
         self.state_transaction_table = []
+        self.current_state = None
 
     def run(self):
         if len(self.state_transaction_table) == 0: return
         self.current_state = self.state_transaction_table[0].prev_state()
-        self.current_state.enter(None)
+        self.current_state.enter(None, self)
 
-class EvtOpen(FsmEvent):
-    def __init__(self, context):
-        super().__init__(context)
+    def isRunning(self):
+        return self.current_state is not None
 
-class EvtPause(FsmEvent):
-    def __init__(self, context):
-        super().__init__(context)
-
-class EvtClose(FsmEvent):
-    def __init__(self, context):
-        super().__init__(context)
-
-class StateSleeping(FsmState):
-    def enter(self, event):
-        print("enter StateSleeping")
-
-    def leave(self):
-        print("leave StateSleeping")
-
-class StateRunning(FsmState):
-    def enter(self, event):
-        print("enter StateRunning")
-
-    def leave(self):
-        print("leave StateRunning")
-
-class StatePause(FsmState):
-    def enter(self, event):
-        print("enter StatePause")
-
-    def leave(self):
-        print("leave StatePause")
-
-class StateShutdown(FsmFinalState):
-    def enter(self, event):
-        print("enter StateShutdown")
-
-if __name__ == "__main__":
-    fsm = FSM()
-    #fsm.add_global_transaction(EvtClose, StateShutdown)
-    fsm.add_transaction(StateSleeping, EvtOpen, StateRunning)
-    fsm.add_transaction(StateRunning, EvtClose, StateShutdown)
-    fsm.add_transaction(StateRunning, EvtPause, StatePause)
-    fsm.add_transaction(StatePause, EvtOpen, StateRunning)
-    fsm.add_transaction(StatePause, EvtClose, StateShutdown)
-
-    fsm.run()
-    fsm.process_event(EvtOpen(None))
-    fsm.process_event(EvtPause(None))
-   # fsm.process_event(EvtClose(None))
-    fsm.process_event(EvtOpen(None))
-    fsm.process_event(EvtPause(None))
-    fsm.process_event(EvtClose(None))
-    #fsm.process_event(EvtPause(None))
+    def next_state(self, event):
+        for transaction in self.global_transaction_table:
+            if isinstance(event, transaction.event):
+                return transaction.next_state
+        for transaction in self.state_transaction_table:
+            if isinstance(self.current_state, transaction.prev_state) and isinstance(event, transaction.event):
+                return transaction.next_state
+        return None
