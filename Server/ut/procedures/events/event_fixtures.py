@@ -36,7 +36,7 @@ def turnToNextPlayerDealEvent():
 
 @pytest.fixture
 def dispatchCardsEvent():
-    return DispatchCardsEvent({})
+    return DispatchCardsEvent({"cards": [1, 2, 3, 4, 5]})
 
 @pytest.fixture
 def offlineEvent():
@@ -69,10 +69,6 @@ def dealEvent():
 @pytest.fixture
 def passEvent():
     return PassEvent({})
-
-@pytest.fixture
-def dealTimeoutEvent():
-    return DealTimeoutEvent({})
 
 @pytest.fixture
 def enterRoomEvent():

@@ -30,9 +30,3 @@ def test_received_deal_event(inGameProcedure, dispatchCardsEvent, turnToNextPlay
     inGameProcedure.process_event(turnToNextPlayerDealEvent)
     inGameProcedure.process_event(dealEvent)
     assert(isinstance(inGameProcedure.current_state, GamingState))
-
-def test_received_deal_timeout_event(inGameProcedure, dispatchCardsEvent, turnToNextPlayerDealEvent, dealTimeoutEvent):
-    inGameProcedure.process_event(dispatchCardsEvent)
-    inGameProcedure.process_event(turnToNextPlayerDealEvent)
-    inGameProcedure.process_event(dealTimeoutEvent)
-    assert(isinstance(inGameProcedure.current_state, GamingState))

@@ -20,4 +20,3 @@ def test_get_cards(cardheap):
     cards = cardheap.getCards(35)
     assert(len(cards) == 30)
     assert(cardheap.isEmpty())
-
