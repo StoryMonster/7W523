@@ -37,8 +37,8 @@ def writePyMsgEnum(filename, msgs, classname, id_counter):
 
 
 def generatePyFile(c2s_msgs, s2c_msgs):
-    writePyMsgEnum("../../Server/src/messages/out_msgs.py", s2c_msgs, "OutMsgs", 1)
-    writePyMsgEnum("../../Server/src/messages/in_msgs.py", c2s_msgs, "InMsgs", 1 + len(s2c_msgs))
+    writePyMsgEnum("../../Server/src/msg/out_msgs.py", s2c_msgs, "OutMsgs", 1)
+    writePyMsgEnum("../../Server/src/msg/in_msgs.py", c2s_msgs, "InMsgs", 1 + len(s2c_msgs))
 
 def writeTsMsgEnum(filename, msgs, classname, id_counter):
     content = [f"export enum {classname}",

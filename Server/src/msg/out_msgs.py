@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 class OutMsgs(IntEnum):
-    CARDS_DISPATCH_IND = 1
+    DISPATCH_CARDS_IND = 1
     GAME_OVER_IND = 2
     GAME_START_IND = 3
     PLAYER_DEAL_IND = 4
@@ -12,5 +12,4 @@ class OutMsgs(IntEnum):
     PLAYER_JOIN_ROOM_IND = 9
     PLAYER_LEAVE_ROOM_IND = 10
     PLAYER_READY_IND = 11
-    PLAYER_NOT_READY_IND = 12
-    CHANGE_DEAL_OWNER_IND = 13
+    DEAL_OWNER_CHNAGE_IND = 12
