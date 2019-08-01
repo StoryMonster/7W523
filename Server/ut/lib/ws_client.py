@@ -1,7 +1,7 @@
 
 
 class WsClient:
-    def __init__(self, server):
+    def __init__(self):
         self.server = None
         self.latest_msg = None
 
