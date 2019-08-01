@@ -4,9 +4,8 @@ GAME_START_IND
 PLAYER_DEAL_IND         #玩家出牌
 PLAYER_PASS_IND         #玩家过牌
 PLAYER_GET_SCORE_IND    #玩家在回合中得分
-PLAYER_SHOW_CARDS_IND   #游戏结束时，所有玩家明牌
 ROOM_INFO_IND           #玩家房间信息
 PLAYER_JOIN_ROOM_IND    #有其他玩家进入房间信息
 PLAYER_LEAVE_ROOM_IND   #有其他玩家离开房间信息
 PLAYER_READY_IND        #房间中有玩家准备
-DEAL_OWNER_CHNAGE_IND   #切换出牌人
+DEAL_OWNER_CHANGE_IND   #切换出牌人

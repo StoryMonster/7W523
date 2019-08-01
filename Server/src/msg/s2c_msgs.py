@@ -1,4 +1,4 @@
-from out_msgs import OutMsgs
+from .out_msgs import OutMsgs
 from collections import namedtuple
 
 PlayerGameResult = namedtuple("PlayerGameResult", ["playerId", "cards", "score"])
@@ -11,7 +11,7 @@ class S2CMsg:
         return {"msgId": self.msgId}
 
     def deserialize(self, data):
-        self.msgId = data["msgId"]
+        assert(self.msgId == data["msgId"])
 
 class DispatchCardsInd(S2CMsg):
     def __init__(self):
@@ -42,14 +42,17 @@ class GameOverInd(S2CMsg):
     def serialize(self):
         data = super().serialize()
         data["roomId"] = self.roomId
-        data["res"] = self.res
+        data["res"] = []
+        for elem in self.res:
+            data["res"].append({"playerId": elem.playerId, "cards": elem.cards, "score": elem.score})
         return data
 
     def deserialize(self, data):
         super().deserialize(data)
         self.roomId = data["roomId"]
-        self.res = data["res"]
-
+        self.res = []
+        for elem in data["res"]:
+            self.res.append(PlayerGameResult(elem["playerId"], elem["cards"], elem["score"]))
 
 class GameStartInd(S2CMsg):
     def __init__(self):
@@ -126,26 +129,6 @@ class PlayerGetScoreInd(S2CMsg):
         self.scoreToAdd = data["scoreToAdd"]
         self.scoreInTotal = data["scoreInTotal"]
 
-class PlayerShowCardsInd(S2CMsg):
-    def __init__(self):
-        super().__init__(OutMsgs.PLAYER_SHOW_CARDS_IND)
-        self.playerId = 0
-        self.roomId = 0
-        self.cards = []
-
-    def serialize(self):
-        data = super().serialize()
-        data["playerId"] = self.playerId
-        data["roomId"] = self.roomId
-        data["cards"] = self.cards
-        return data
-
-    def deserialize(self, data):
-        super().deserialize(data)
-        self.playerId = data["playerId"]
-        self.roomId = data["roomId"]
-        self.cards = data["cards"]
-
 class RoomInfoInd(S2CMsg):
     def __init__(self):
         super().__init__(OutMsgs.ROOM_INFO_IND)
@@ -219,7 +202,7 @@ class PlayerReadyInd(S2CMsg):
 
 class DealOwnerChangeInd(S2CMsg):
     def __init__(self):
-        super().__init__(OutMsgs.DEAL_OWNER_CHNAGE_IND)
+        super().__init__(OutMsgs.DEAL_OWNER_CHANGE_IND)
         self.playerId = 0
         self.roomId = 0
 

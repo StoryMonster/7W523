@@ -1,4 +1,4 @@
-from in_msgs import InMsgs
+from .in_msgs import InMsgs
 from common.room_types import RoomType
 
 class C2SMsg:
@@ -13,20 +13,20 @@ class C2SMsg:
         return data
 
     def deserialize(self, data):
-        self.msgId = data["msgId"]
+        assert(self.msgId == data["msgId"])
         self.playerId = data["playerId"]
 
 class PlayerLoginInd(C2SMsg):
     def __init__(self):
-        super().__init__(InMsgs.CLIENT_LOGIN_IND)
+        super().__init__(InMsgs.PLAYER_LOGIN_IND)
 
 class PlayerLogoutInd(C2SMsg):
     def __init__(self):
-        super().__init__(InMsgs.CLIENT_LOGOUT_IND)
+        super().__init__(InMsgs.PLAYER_LOGOUT_IND)
 
 class PlayerEnterRoomInd(C2SMsg):
     def __init__(self):
-        super().__init__(InMsgs.CLIENT_ENTER_ROOM_IND)
+        super().__init__(InMsgs.PLAYER_ENTER_ROOM_IND)
         self.roomType = RoomType.TwoPlayersRoom
 
     def serialize(self):
@@ -40,7 +40,7 @@ class PlayerEnterRoomInd(C2SMsg):
 
 class PlayerLeaveRoomInd(C2SMsg):
     def __init__(self):
-        super().__init__(InMsgs.CLIENT_LEAVE_ROOM_IND)
+        super().__init__(InMsgs.PLAYER_LEAVE_ROOM_IND)
         self.roomId = 0
 
     def serialize(self):
@@ -54,7 +54,7 @@ class PlayerLeaveRoomInd(C2SMsg):
 
 class PlayerReadyInd(C2SMsg):
     def __init__(self):
-        super().__init__(InMsgs.CLIENT_READY_IND)
+        super().__init__(InMsgs.PLAYER_READY_IND)
         self.isReady = False
         self.roomId = 0
 
@@ -71,7 +71,7 @@ class PlayerReadyInd(C2SMsg):
 
 class PlayerPassInd(C2SMsg):
     def __init__(self):
-        super().__init__(InMsgs.CLIENT_PASS_IND)
+        super().__init__(InMsgs.PLAYER_PASS_IND)
         self.roomId = 0
 
     def serialize(self):
@@ -85,7 +85,7 @@ class PlayerPassInd(C2SMsg):
 
 class PlayerDealInd(C2SMsg):
     def __init__(self):
-        super().__init__(InMsgs.CLIENT_DEAL_IND)
+        super().__init__(InMsgs.PLAYER_DEAL_IND)
         self.roomId = 0
         self.cards = []
 
@@ -102,7 +102,7 @@ class PlayerDealInd(C2SMsg):
 
 class PlayerDealTimeoutInd(C2SMsg):
     def __init__(self):
-        super().__init__(InMsgs.CLIENT_DEAL_TIMEOUT_IND)
+        super().__init__(InMsgs.PLAYER_DEAL_TIMEOUT_IND)
         self.roomId = 0
 
     def serialize(self):
