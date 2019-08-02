@@ -20,11 +20,15 @@ def test_dispatch_cards_ind():
 
 def test_room_info_ind():
     msg = RoomInfoInd()
-    data = {"msgId": OutMsgs.ROOM_INFO_IND, "roomId": 12, "playerId": 1}
+    data = {"msgId": OutMsgs.ROOM_INFO_IND, "players": [{"playerId": 1, "roomId": 2, "index": 3, "isReady": False},
+                                                        {"playerId": 2, "roomId": 2, "index": 3, "isReady": True}]}
     msg.deserialize(data)
     assert(msg.msgId == data["msgId"])
-    assert(msg.roomId == data["roomId"])
-    assert(msg.playerId == data["playerId"])
+    for i in range(len(data["players"])):
+        assert(msg.players[i].playerId == data["players"][i]["playerId"])
+        assert(msg.players[i].roomId == data["players"][i]["roomId"])
+        assert(msg.players[i].index == data["players"][i]["index"])
+        assert(msg.players[i].isReady == data["players"][i]["isReady"])
     assert(data == msg.serialize())
 
 def test_game_start_ind():
@@ -79,20 +83,24 @@ def test_player_get_score_ind():
 
 def test_player_join_room_ind():
     msg = PlayerJoinRoomInd()
-    data = {"msgId": OutMsgs.PLAYER_JOIN_ROOM_IND, "roomId": 12, "playerId": 1}
+    data = {"msgId": OutMsgs.PLAYER_JOIN_ROOM_IND, "playerInfo": {"playerId": 1, "roomId": 1, "index": 1, "isReady": True}}
     msg.deserialize(data)
     assert(msg.msgId == data["msgId"])
-    assert(msg.roomId == data["roomId"])
-    assert(msg.playerId == data["playerId"])
+    assert(msg.playerInfo.roomId == data["playerInfo"]["roomId"])
+    assert(msg.playerInfo.playerId == data["playerInfo"]["playerId"])
+    assert(msg.playerInfo.index == data["playerInfo"]["index"])
+    assert(msg.playerInfo.isReady == data["playerInfo"]["isReady"])
     assert(data == msg.serialize())
 
 def test_player_leave_room_ind():
     msg = PlayerLeaveRoomInd()
-    data = {"msgId": OutMsgs.PLAYER_LEAVE_ROOM_IND, "roomId": 12, "playerId": 1}
+    data = {"msgId": OutMsgs.PLAYER_LEAVE_ROOM_IND, "playerInfo": {"playerId": 1, "roomId": 1, "index": 1, "isReady": True}}
     msg.deserialize(data)
     assert(msg.msgId == data["msgId"])
-    assert(msg.roomId == data["roomId"])
-    assert(msg.playerId == data["playerId"])
+    assert(msg.playerInfo.roomId == data["playerInfo"]["roomId"])
+    assert(msg.playerInfo.playerId == data["playerInfo"]["playerId"])
+    assert(msg.playerInfo.index == data["playerInfo"]["index"])
+    assert(msg.playerInfo.isReady == data["playerInfo"]["isReady"])
     assert(data == msg.serialize())
 
 def test_deal_owner_change_ind():
@@ -106,10 +114,11 @@ def test_deal_owner_change_ind():
 
 def test_player_ready_ind():
     msg = PlayerReadyInd()
-    data = {"msgId": OutMsgs.PLAYER_READY_IND, "roomId": 12, "playerId": 1, "isReady": True}
+    data = {"msgId": OutMsgs.PLAYER_READY_IND, "playerInfo": {"playerId": 1, "roomId": 1, "index": 1, "isReady": True}}
     msg.deserialize(data)
     assert(msg.msgId == data["msgId"])
-    assert(msg.roomId == data["roomId"])
-    assert(msg.playerId == data["playerId"])
-    assert(msg.isReady == data["isReady"])
+    assert(msg.playerInfo.roomId == data["playerInfo"]["roomId"])
+    assert(msg.playerInfo.playerId == data["playerInfo"]["playerId"])
+    assert(msg.playerInfo.index == data["playerInfo"]["index"])
+    assert(msg.playerInfo.isReady == data["playerInfo"]["isReady"])
     assert(data == msg.serialize())

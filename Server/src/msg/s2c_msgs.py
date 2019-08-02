@@ -2,6 +2,8 @@ from .out_msgs import OutMsgs
 from collections import namedtuple
 
 PlayerGameResult = namedtuple("PlayerGameResult", ["playerId", "cards", "score"])
+PublicPlayerInfoInRoom = namedtuple("PublicPlayerInfoInRoom", ["playerId", "roomId", "index", "isReady"])
+
 
 class S2CMsg:
     def __init__(self, msgId=0):
@@ -132,73 +134,74 @@ class PlayerGetScoreInd(S2CMsg):
 class RoomInfoInd(S2CMsg):
     def __init__(self):
         super().__init__(OutMsgs.ROOM_INFO_IND)
-        self.roomId = 0
-        self.playerId = 0
+        self.players = []
 
     def serialize(self):
         data = super().serialize()
-        data["roomId"] = self.roomId
-        data["playerId"] = self.playerId
+        data["players"] = []
+        for player in self.players:
+            data["players"].append({"playerId": player.playerId, "roomId": player.roomId, "index": player.index, "isReady": player.isReady})
         return data
 
     def deserialize(self, data):
         super().deserialize(data)
-        self.roomId = data["roomId"]
-        self.playerId = data["playerId"]
+        self.players = []
+        for player in data["players"]:
+            self.players.append(PublicPlayerInfoInRoom(player["playerId"], player["roomId"], player["index"], player["isReady"]))
 
 class PlayerJoinRoomInd(S2CMsg):
     def __init__(self):
         super().__init__(OutMsgs.PLAYER_JOIN_ROOM_IND)
-        self.roomId = 0
-        self.playerId = 0
+        self.playerInfo = PublicPlayerInfoInRoom(0, 0, 0, False)
 
     def serialize(self):
         data = super().serialize()
-        data["roomId"] = self.roomId
-        data["playerId"] = self.playerId
+        data["playerInfo"] = {}
+        data["playerInfo"]["roomId"] = self.playerInfo.roomId
+        data["playerInfo"]["playerId"] = self.playerInfo.playerId
+        data["playerInfo"]["index"] = self.playerInfo.index
+        data["playerInfo"]["isReady"] = self.playerInfo.isReady
         return data
 
     def deserialize(self, data):
         super().deserialize(data)
-        self.playerId = data["playerId"]
-        self.roomId = data["roomId"]
+        self.playerInfo = PublicPlayerInfoInRoom(data["playerInfo"]["playerId"], data["playerInfo"]["roomId"], data["playerInfo"]["index"], data["playerInfo"]["isReady"])
 
 class PlayerLeaveRoomInd(S2CMsg):
     def __init__(self):
         super().__init__(OutMsgs.PLAYER_LEAVE_ROOM_IND)
-        self.roomId = 0
-        self.playerId = 0
+        self.playerInfo = PublicPlayerInfoInRoom(0, 0, 0, False)
 
     def serialize(self):
         data = super().serialize()
-        data["roomId"] = self.roomId
-        data["playerId"] = self.playerId
+        data["playerInfo"] = {}
+        data["playerInfo"]["roomId"] = self.playerInfo.roomId
+        data["playerInfo"]["playerId"] = self.playerInfo.playerId
+        data["playerInfo"]["index"] = self.playerInfo.index
+        data["playerInfo"]["isReady"] = self.playerInfo.isReady
         return data
 
     def deserialize(self, data):
         super().deserialize(data)
-        self.playerId = data["playerId"]
-        self.roomId = data["roomId"]
+        self.playerInfo = PublicPlayerInfoInRoom(data["playerInfo"]["playerId"], data["playerInfo"]["roomId"], data["playerInfo"]["index"], data["playerInfo"]["isReady"])
 
 class PlayerReadyInd(S2CMsg):
     def __init__(self):
         super().__init__(OutMsgs.PLAYER_READY_IND)
-        self.roomId = 0
-        self.playerId = 0
-        self.isReady = False
+        self.playerInfo = PublicPlayerInfoInRoom(0, 0, 0, False)
 
     def serialize(self):
         data = super().serialize()
-        data["roomId"] = self.roomId
-        data["playerId"] = self.playerId
-        data["isReady"] = self.isReady
+        data["playerInfo"] = {}
+        data["playerInfo"]["roomId"] = self.playerInfo.roomId
+        data["playerInfo"]["playerId"] = self.playerInfo.playerId
+        data["playerInfo"]["index"] = self.playerInfo.index
+        data["playerInfo"]["isReady"] = self.playerInfo.isReady
         return data
 
     def deserialize(self, data):
         super().deserialize(data)
-        self.playerId = data["playerId"]
-        self.roomId = data["roomId"]
-        self.isReady = data["isReady"]
+        self.playerInfo = PublicPlayerInfoInRoom(data["playerInfo"]["playerId"], data["playerInfo"]["roomId"], data["playerInfo"]["index"], data["playerInfo"]["isReady"])
 
 class DealOwnerChangeInd(S2CMsg):
     def __init__(self):

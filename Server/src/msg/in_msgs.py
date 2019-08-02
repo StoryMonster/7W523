@@ -9,3 +9,4 @@ class InMsgs(IntEnum):
     PLAYER_PASS_IND = 17
     PLAYER_DEAL_IND = 18
     PLAYER_DEAL_TIMEOUT_IND = 19
+    

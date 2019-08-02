@@ -1,9 +1,12 @@
 from websocket_server import WebsocketServer
+from msg.msg_receiver import MsgReceiver
+from player.players_manager import PlayersManager
+from room.rooms_manager import RoomManager
 import logging
 
-playersManager = None
-msgReceiver = None
-roomManager = None
+global playersManager
+global msgReceiver
+global roomManager
 
 def new_client_joint(client, server):
     logging.debug("new client connected")
@@ -21,9 +24,12 @@ def client_leave(client, server):
         playerManager.handlePlayerOffline(player.playerId)
 
 if __name__ == "__main__":
-    global playersManager, msgReceiver, roomManager
     server = WebsocketServer(host='127.0.0.1', port=12345)
     server.set_fn_new_client(new_client_joint)
     server.set_fn_message_received(received_message)
     server.set_fn_client_left(client_leave)
+    global playersManager, msgReceiver, roomManager
+    msgReceiver = MsgReceiver()
+    playersManager = PlayersManager(server, msgReceiver)
+    roomManager = RoomManager(server, playersManager, msgReceiver)
     server.run_forever()
