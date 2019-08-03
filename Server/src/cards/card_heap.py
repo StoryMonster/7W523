@@ -27,3 +27,9 @@ class CardHeap:
 
     def isEmpty(self):
         return self.cardHeapIndex == self.cards_num
+
+    def calcCardScore(self, card):
+        val = card % 13
+        if val == 5: return 5
+        if val == 10 or val == 0: return 10
+        return 0

@@ -8,4 +8,4 @@ class Player:
         self.ws_server = ws_server
     
     def sendMsg(self, msg):
-        self.ws_server.send_msg(self.ws_addr, json.dumps(msg))
+        self.ws_server.send_message(self.ws_addr, json.dumps(msg))

@@ -1,51 +1,61 @@
 import MsgHandlerManager from "./message_handler_manager"
-import { OutMsgs } from "../messages/out_msgs"
 import { InMsgs} from "../messages/in_msgs"
 
 export default class WebsocketClient
 {
-    private sock: WebSocket = null
+    private static sock: WebSocket = null
     private msgHandlerManager: MsgHandlerManager = null
+    public static connectSuccessCallback: any = null
+    public static connectFailCallback: any = null
     public static instance: WebsocketClient = new WebsocketClient()
 
     private constructor()
     {
-        this.sock = new WebSocket("ws://127.0.0.1:12345")
-        this.sock.onopen = this.onConnectServer
-        this.sock.onclose = this.onCloseConnection
-        this.sock.onmessage = this.onReceivedMessage
-        this.sock.onerror = this.onCloseConnection
-
         this.msgHandlerManager = new MsgHandlerManager()
+    }
+
+    public connect(addr: string)
+    {
+        WebsocketClient.sock = new WebSocket(addr)
+        WebsocketClient.sock.onopen = this.onConnectServer
+        WebsocketClient.sock.onclose = this.onCloseConnection
+        WebsocketClient.sock.onmessage = this.onReceivedMessage
+        WebsocketClient.sock.onerror = this.onWebSocketError
     }
 
     public static getInstance(): WebsocketClient
     {
-         return WebsocketClient.instance
+        return WebsocketClient.instance
     }
 
     onConnectServer(event: Event): any
     {
         console.log("Connectted to server successfully")
+        if (WebsocketClient.connectSuccessCallback != null)
+        {
+            WebsocketClient.connectSuccessCallback()
+        }
     }
 
     onWebSocketError(event: Event): any
     {
         console.log("Something error on the websocket connection")
+        if (WebsocketClient.connectFailCallback != null)
+        {
+            WebsocketClient.connectFailCallback()
+        }
     }
 
     onReceivedMessage(event: any): any
     {
         let decoded = JSON.parse(event.data)
-        let header = decoded["header"]
-        let body = decoded["body"]
-        let handler = WebsocketClient.instance.msgHandlerManager.getHandler(header["msgId"])
+        let handler = WebsocketClient.instance.msgHandlerManager.getHandler(decoded["msgId"])
         if (handler == null)
         {
-            console.error(`No handler found for ${header["msgId"]}`)
+            console.error(`No handler found for ${decoded["msgId"]}`)
             return
         }
-        handler(body)
+        handler(decoded)
     }
 
     onCloseConnection(event: Event): any
@@ -53,11 +63,9 @@ export default class WebsocketClient
         console.log("disconnect from server")
     }
 
-    sendMessage(id: OutMsgs, msg: any)
+    static sendMessage(msg: any)
     {
-        let header = {"msgId": id, "playerId": 123}
-        let data = {"header": header, "body": msg}
-        this.sock.send(JSON.stringify(data))
+        WebsocketClient.sock.send(JSON.stringify(msg))
     }
 
     register(msgId: number, handler: Function)
@@ -70,4 +78,3 @@ export default class WebsocketClient
         WebsocketClient.instance.msgHandlerManager.deregister(msgId)
     }
 }
-

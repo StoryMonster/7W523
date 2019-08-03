@@ -1,7 +1,7 @@
 import UsedCard from "./usedcard";
 import HandCard from "./handcard";
 
-export default class PlayerCardsManager
+export default class PlayerCardsManager implements CardsManager
 {
     private handCardsNum: number = 0
     private usedCards: UsedCard[] = []
@@ -19,7 +19,6 @@ export default class PlayerCardsManager
     dispatchCards(cards: number[])
     {
         this.clearUsedCards()
-        let handCardsNum: number = this.handCards.length
         for (let card of cards)
         {
             let handcard: HandCard = new HandCard(card)
@@ -29,7 +28,7 @@ export default class PlayerCardsManager
         this.arrageHandCards()
     }
 
-    deal()
+    deal(_: number[])
     {
         let cards: number[] = this.getSelectHandCards()
         // TODO: 判断选择的牌型是否合法
@@ -46,7 +45,12 @@ export default class PlayerCardsManager
     pass()
     {}
 
-    private getSelectHandCards(): number[]
+    getHandCardsNum(): number
+    {
+        return this.handCards.length
+    }
+
+    getSelectHandCards(): number[]
     {
         let cards: number[] = []
         for (let handcard of this.handCards)

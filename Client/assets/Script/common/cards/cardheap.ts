@@ -17,4 +17,10 @@ export default class CardHeap extends CardBack
         this.txtLeftCardsNum = node.addComponent(cc.Label)
         this.txtLeftCardsNum.string = `${leftCardsNum}`
     }
+
+    decreaseCardsNum(num: number)
+    {
+        this.leftCardsNum -= num
+        this.txtLeftCardsNum.string = `${this.leftCardsNum}`
+    }
 }

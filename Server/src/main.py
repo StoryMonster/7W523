@@ -8,8 +8,16 @@ global playersManager
 global msgReceiver
 global roomManager
 
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S',
+                    filename='../server_running.log',
+                    filemode='w')
+
+
 def new_client_joint(client, server):
     logging.debug("new client connected")
+    print("new client connected")
 
 def received_message(client, server, message):
     global msgReceiver
@@ -18,10 +26,11 @@ def received_message(client, server, message):
 
 def client_leave(client, server):
     global playersManager, roomManager
-    if playerManager is not None and roomManager is not None:
-        player = playerManager.getPlayerByWsAddr(client)
-        roomManager.handlePlayerOffline(player.playerId)
-        playerManager.handlePlayerOffline(player.playerId)
+    if playersManager is not None and roomManager is not None:
+        player = playersManager.getPlayerByWsAddr(client)
+        if player is not None:
+            roomManager.handlePlayerOffline(player)
+            playersManager.handlePlayerOffline(player.playerId)
 
 if __name__ == "__main__":
     server = WebsocketServer(host='127.0.0.1', port=12345)

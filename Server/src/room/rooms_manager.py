@@ -22,8 +22,10 @@ class RoomManager:
         room = self.selectValidRoom(msg.roomType)
         if room is None:
             room = self.createRoom(msg.roomType)
+            self.rooms[room.roomId] = room
+            logging.info(f"create room {room.roomId}")
         player = self.playersMngr.getPlayerById(msg.playerId)
-        room.hanldePlayerJoinRoom(player)
+        room.handlePlayerJoinRoom(player)
 
     def handlePlayerLeaveRoom(self, msg, ws_addr):
         room = self.getRoom(msg.roomId)
@@ -82,11 +84,7 @@ class RoomManager:
     
     def createRoom(self, roomType):
         roomId = self.generateRoomId()
-        if RoomType.TwoPlayersRoom == roomType:
-            return Room(roomId, self.ws_server, 2)
-        elif RoomType.ThreePlayersRoom == roomType:
-            return Room(roomId, self.ws_server, 3)
-        return None
+        return Room(roomId, self.ws_server, roomType)
 
     def destroyRoom(self, roomId):
         if roomId in self.rooms:
@@ -101,5 +99,4 @@ class RoomManager:
         for id in self.rooms:
             if self.rooms[id].roomType == roomType and not self.rooms[id].isFull():
                 return self.rooms[id]
-
-    
+        return None

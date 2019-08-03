@@ -6,6 +6,7 @@ class PlayerInRoom:
         self.cards = []
         self.isReady = False
         self.isPassing = False
+        self.score = 0
 
     def getId(self):
         return self.player.playerId

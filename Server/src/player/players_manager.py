@@ -44,5 +44,3 @@ class PlayersManager:
 
     def isPlayerOnline(self, playerId):
         return playerId in self.players
-
-    

@@ -1,7 +1,7 @@
 import UsedCard from "./usedcard";
 import CardBack from "./cardback";
 
-export default class EnemyCardsManager
+export default class EnemyCardsManager implements CardsManager
 {
     private handCardsNum: number = 0
     private usedCards: UsedCard[] = []
@@ -16,7 +16,7 @@ export default class EnemyCardsManager
         this.usedCardsNode = node.getChildByName("playedcards")
     }
 
-    dispatchCards()
+    dispatchCards(cards: number[])
     {
         this.clearUsedCards()
         let handCardsNum: number = this.handCards.length
@@ -26,7 +26,7 @@ export default class EnemyCardsManager
             this.handCardsNode.addChild(handcard)
             this.handCards.push(handcard)
         }
-        this.arrageHandCards()
+        this.arrangeHandCards()
     }
 
     deal(cards: number[])
@@ -39,11 +39,21 @@ export default class EnemyCardsManager
             this.addUsedCard(card)
         }
         this.arrangeUsedCards()
-        this.arrageHandCards()
+        this.arrangeHandCards()
     }
 
     pass()
     {}
+
+    getSelectHandCards(): number[]
+    {
+        return []
+    }
+
+    getHandCardsNum(): number
+    {
+        return this.handCards.length
+    }
 
     private addUsedCard(value: number)
     {
@@ -84,7 +94,7 @@ export default class EnemyCardsManager
         }
     }
 
-    private arrageHandCards()
+    private arrangeHandCards()
     {
         let cardsNum: number = this.handCards.length
         if (cardsNum <= 0) { return }
