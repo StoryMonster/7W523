@@ -13,3 +13,9 @@ class PlayerInRoom:
 
     def sendMsg(self, msg):
         self.player.sendMsg(msg)
+
+    def reset(self):
+        self.cards = []
+        self.isPassing = False
+        self.isReady = False
+        self.score = 0

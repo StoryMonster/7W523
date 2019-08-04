@@ -3,10 +3,8 @@ import HandCard from "./handcard";
 
 export default class PlayerCardsManager implements CardsManager
 {
-    private handCardsNum: number = 0
     private usedCards: UsedCard[] = []
     private handCards: HandCard[] = []
-    private maxHandCardsNum: number = 5
     private handCardsNode: cc.Node = null
     private usedCardsNode: cc.Node = null
 
@@ -28,11 +26,19 @@ export default class PlayerCardsManager implements CardsManager
         this.arrageHandCards()
     }
 
+    setHandCards(cards: number[])
+    {
+        this.handCardsNode.removeAllChildren()
+        for (let card of cards)
+        {
+            this.handCards.push(new HandCard(card))
+        }
+        this.arrageHandCards()
+    }
+
     deal(_: number[])
     {
         let cards: number[] = this.getSelectHandCards()
-        // TODO: 判断选择的牌型是否合法
-        // TODO: 向server发送自己出的牌
         this.deleteSelectedHandCards()
         for (let card of cards)
         {
@@ -81,14 +87,6 @@ export default class PlayerCardsManager implements CardsManager
         let card: UsedCard = new UsedCard(value)
         this.usedCardsNode.addChild(card)
         this.usedCards.push(card)
-    }
-
-    private removeOneHandCard()
-    {
-        let cardsNum: number = this.handCards.length
-        if (cardsNum <= 0) { return }
-        this.handCards[0].removeFromParent()
-        this.handCards.splice(0, 1)
     }
 
     private clearUsedCards()

@@ -2,7 +2,7 @@ import random
 
 class CardHeap:
     def __init__(self, cards_num=54, start_index=1):
-        self.cards_num = 54
+        self.cards_num = cards_num
         self.cards = [i for i in range(start_index, self.cards_num+start_index)]
         self.cardHeapIndex = 0
 

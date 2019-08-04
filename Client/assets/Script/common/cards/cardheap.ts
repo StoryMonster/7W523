@@ -1,14 +1,14 @@
-import CardBack from "./cardback";
+import Card from "./card";
 
 
-export default class CardHeap extends CardBack
+export default class CardHeap extends Card
 {
     private leftCardsNum: number = 0
     private txtLeftCardsNum: cc.Label = null
 
     constructor(leftCardsNum: number)
     {
-        super()
+        super(0)
         this.leftCardsNum = leftCardsNum
         let node: cc.Node = new cc.Node()
         node.color = cc.Color.BLACK
@@ -21,6 +21,12 @@ export default class CardHeap extends CardBack
     decreaseCardsNum(num: number)
     {
         this.leftCardsNum -= num
+        if (this.leftCardsNum < 0) { this.leftCardsNum = 0 }
         this.txtLeftCardsNum.string = `${this.leftCardsNum}`
+    }
+
+    getLeftCardsNum(): number
+    {
+        return this.leftCardsNum
     }
 }

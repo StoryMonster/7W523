@@ -63,6 +63,7 @@ export default class PlayerInfoInRoom
         this.isPassing = false
         this.generalInfo = ""
         this.node.getChildByName("score").getComponent(cc.Label).string = ""
+        this.setReady(false)
     }
 
     setPass(toPass: boolean)
@@ -80,5 +81,11 @@ export default class PlayerInfoInRoom
     {
         this.score = score
         this.node.getChildByName("score").getComponent(cc.Label).string = `分数: ${this.score}`
+    }
+
+    setHandCards(cards: number[])
+    {
+        this.cards = cards
+        this.cardsManager.setHandCards(cards)
     }
 }

@@ -8,6 +8,7 @@ import EnemyCardsManager from "../../common/cards/enemy_cards_manager";
 import Player from "../../player/player_info";
 import PlayerInfoInRoom from "../../player/player_info_in_room";
 import MsgHandlerManager from "../../common/message_handler_manager";
+import { GameResult } from "../../common/game_result";
 
 function getCardsLevel(cards: number[]): any
 {
@@ -57,6 +58,13 @@ export default class TwoPlayersTableModel
         this.client.register(InMsgs.PLAYER_LEAVE_ROOM_IND, this.handlePlayerLeaveRoom.bind(this))
 
         this.enterRoom()
+        this.cleanPlayer2Seat()
+    }
+
+    private cleanPlayer2Seat()
+    {
+        this.view.setPlayer2GeneralInfo("")
+        this.player2.situp()
     }
 
     private enterRoom()
@@ -81,7 +89,6 @@ export default class TwoPlayersTableModel
 
         var playerLeaveRoomInd = {"msgId": OutMsgs.PLAYER_LEAVE_ROOM_IND, "playerId": this.player1.playerId, "roomId": this.roomId}
         WebsocketClient.sendMessage(playerLeaveRoomInd)
-
     }
 
     handleRoomInfo(msg: any)
@@ -128,6 +135,21 @@ export default class TwoPlayersTableModel
         }
     }
 
+    fillPlayer2Cards()
+    {
+        let leftCardsNumInHeap: number = this.view.getCardsNumInCardsHeap()
+        let playerHandCardsNum: number = this.player2.getHandCardsNum()
+        let cardsNumWanted: number = 5 - playerHandCardsNum
+        if (cardsNumWanted > leftCardsNumInHeap) { cardsNumWanted = leftCardsNumInHeap }
+        let player2cards: number[] = []
+        for (let i: number = 0; i < cardsNumWanted; ++i)
+        {
+            player2cards.push(0)   // player2的手牌全部显示背面
+        }
+        this.player2.dispatchCards(player2cards)
+        this.view.decreaseCardHeap(cardsNumWanted)
+    }
+
     handleCardsDispatchInd(msg: any)
     {
         let roomId: number = msg["roomId"]
@@ -136,10 +158,9 @@ export default class TwoPlayersTableModel
         let cards: number[] = msg["cards"]
         if (playerId == this.player1.playerId)
         {
-            this.view.decreaseCardHeap(5 - this.player1.getHandCardsNum())
-            this.view.decreaseCardHeap(5 - this.player2.getHandCardsNum())
             this.player1.dispatchCards(cards)
-            this.player2.dispatchCards([])
+            this.view.decreaseCardHeap(cards.length)
+            this.fillPlayer2Cards()
         }
         this.player1.setPass(false)
         this.player2.setPass(false)
@@ -159,7 +180,26 @@ export default class TwoPlayersTableModel
 
     handleGameOver(msg: any)
     {
-        this.view.gameOver()
+        let roomId: number = msg["roomId"]
+        if (roomId != this.roomId) { return }
+        var res = msg["res"]
+        for (let player of res)
+        {
+            if (player["playerId"] == this.player2.playerId)
+            {
+                this.player2.setHandCards(player["cards"])
+            }
+        }
+        let gameResult: GameResult = GameResult.Draw
+        if (this.player1.score > this.player2.score)
+        {
+            gameResult = GameResult.Win
+        }
+        else if (this.player1.score < this.player2.score)
+        {
+            gameResult = GameResult.Fail
+        }
+        this.view.gameOver(gameResult)
     }
 
     handlePlayerDeal(msg: any)

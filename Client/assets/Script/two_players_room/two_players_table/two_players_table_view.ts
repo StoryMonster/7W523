@@ -4,6 +4,7 @@ import TwoPlayersTableModel from "./two_players_table_model"
 import { PlayerStatus } from "../../common/player_status"
 import Card from "../../common/cards/card"
 import CardHeap from "../../common/cards/cardheap";
+import { GameResult } from "../../common/game_result";
 
 @ccclass
 export default class TwoPlayersTableView extends cc.Component {
@@ -96,10 +97,22 @@ export default class TwoPlayersTableView extends cc.Component {
         this.activeGameProcessControl(false, false)
     }
 
-    gameOver()
+    gameOver(res: GameResult)
     {
         this.activeDealControl(false, false)
         this.activeGameProcessControl(true, true)
+        if (res == GameResult.Draw)
+        {
+            
+        }
+        else if (res == GameResult.Fail)
+        {
+
+        }
+        else
+        {
+
+        }
     }
 
     activeDealControl(deal: boolean, pass: boolean)
@@ -117,5 +130,10 @@ export default class TwoPlayersTableView extends cc.Component {
     decreaseCardHeap(num: number)
     {
         this.cardHeap.decreaseCardsNum(num)
+    }
+
+    getCardsNumInCardsHeap(): number
+    {
+        return this.cardHeap.getLeftCardsNum()
     }
 }

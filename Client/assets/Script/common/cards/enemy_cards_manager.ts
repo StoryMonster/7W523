@@ -1,12 +1,11 @@
 import UsedCard from "./usedcard";
-import CardBack from "./cardback";
+import Card from "./card";
 
 export default class EnemyCardsManager implements CardsManager
 {
     private handCardsNum: number = 0
     private usedCards: UsedCard[] = []
-    private handCards: CardBack[] = []
-    private maxHandCardsNum: number = 5
+    private handCards: Card[] = []
     private handCardsNode: cc.Node = null
     private usedCardsNode: cc.Node = null
 
@@ -19,12 +18,24 @@ export default class EnemyCardsManager implements CardsManager
     dispatchCards(cards: number[])
     {
         this.clearUsedCards()
-        let handCardsNum: number = this.handCards.length
-        for (let i: number = handCardsNum; i < this.maxHandCardsNum; ++i)
+        for (let val of cards)
         {
-            let handcard: CardBack = new CardBack()
+            let handcard: Card = new Card(val)
             this.handCardsNode.addChild(handcard)
             this.handCards.push(handcard)
+        }
+        this.arrangeHandCards()
+    }
+
+    setHandCards(cards: number[])
+    {
+        for (let card of this.handCards)
+        {
+            this.removeOneHandCard()
+        }
+        for (let card of cards)
+        {
+            this.handCards.push(new Card(card))
         }
         this.arrangeHandCards()
     }

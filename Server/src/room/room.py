@@ -76,6 +76,7 @@ class Room:
         self.broadcast(msg)
         self.lastDealIndex = self.players[playerId].index
         if self.isGameOver():
+            self.gameover(player)
             return
         if self.isRoundOver():
             self.startNewRound()
@@ -211,6 +212,11 @@ class Room:
         return True
 
     def isGameOver(self):
+        if not self.cardHeap.isEmpty():
+            return False
+        for id in self.players:
+            if len(self.players[id].cards) == 0:
+                return True
         return False
 
     def getNextNonPassIndex(self):
@@ -225,3 +231,32 @@ class Room:
                     self.currentDealIndex = i
                     return
         self.currentDealIndex = -1
+
+    def getLeftScoresInAllPlayersHand(self):
+        scores = 0
+        for id in self.players:
+            for card in self.players[id].cards:
+                scores += self.cardHeap.calcCardScore(card)
+        return scores
+
+    def gameover(self, player):
+        gameExecutor = self.players[player.playerId]
+        scores = self.getLeftScoresInAllPlayersHand()
+        gameExecutor.score = gameExecutor.score + self.scoreInRound + scores
+        getScoreInd = PlayerGetScoreInd()
+        getScoreInd.scoreToAdd = self.scoreInRound + scores
+        getScoreInd.scoreInTotal = gameExecutor.score
+        getScoreInd.roomId = self.roomId
+        getScoreInd.playerId = gameExecutor.getId()
+        self.broadcast(getScoreInd)
+        self.scoreInRound = 0
+        gameoverInd = GameOverInd()
+        gameoverInd.roomId = self.roomId
+        for id in self.players:
+            gameoverInd.res.append(PlayerGameResult(id, self.players[id].cards, self.players[id].score))
+        self.broadcast(gameoverInd)
+        self.resetAllPlayersStatus()
+
+    def resetAllPlayersStatus(self):
+        for id in self.players:
+            self.players[id].reset()

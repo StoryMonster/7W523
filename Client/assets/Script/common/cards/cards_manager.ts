@@ -6,4 +6,5 @@ interface CardsManager{
     pass(): void
     getSelectHandCards(): number[]
     getHandCardsNum(): number
+    setHandCards(cards: number[]): void
 }
