@@ -951,8 +951,8 @@
     "_enabled": true,
     "_materials": [],
     "_useOriginalSize": true,
-    "_string": "ws://192.168.1.100:12345",
-    "_N$string": "ws://192.168.1.100:12345",
+    "_string": "ws://127.0.0.1:12345",
+    "_N$string": "ws://127.0.0.1:12345",
     "_fontSize": 20,
     "_lineHeight": 25,
     "_enableWrapText": false,
@@ -1120,7 +1120,7 @@
     },
     "_enabled": true,
     "_useOriginalSize": false,
-    "_string": "ws://192.168.1.100:12345",
+    "_string": "ws://127.0.0.1:12345",
     "returnType": 0,
     "maxLength": 128,
     "_tabIndex": 0,
@@ -1957,13 +1957,13 @@
     "_id": "e0+3hNoVFK+ogRimPba9Hk"
   },
   {
-    "__type__": "5f738YXQ3VLYLmTINuAZxW2",
+    "__type__": "49b63Y7VgROaJUAN9IL6m3e",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 2
     },
     "_enabled": true,
-    "_id": "cbV6P60k1K8qcK8gTy7/yd"
+    "_id": "63RUpXXclKa7hdYbuecCkw"
   }
 ]

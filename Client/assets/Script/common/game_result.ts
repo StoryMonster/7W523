@@ -1,6 +1,5 @@
 
 
-
 export enum GameResult
 {
     Win = 0,

@@ -33,7 +33,7 @@ def client_leave(client, server):
             playersManager.handlePlayerOffline(player.playerId)
 
 if __name__ == "__main__":
-    server = WebsocketServer(host='192.168.1.100', port=12345)
+    server = WebsocketServer(host='127.0.0.1', port=12345)
     server.set_fn_new_client(new_client_joint)
     server.set_fn_message_received(received_message)
     server.set_fn_client_left(client_leave)
