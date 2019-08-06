@@ -7,6 +7,7 @@ import {InMsgs} from "../../msg/in_msgs"
 import {OutMsgs} from "../../msg/out_msgs"
 import UserInfo from "../../user/user_info";
 import CardComparator from "../../card/card_comparator";
+import { GameResult } from "../../common/game_result";
 
 @ccclass
 export default class TwoPlayersRoomCtrl extends cc.Component
@@ -153,6 +154,16 @@ export default class TwoPlayersRoomCtrl extends cc.Component
             }
         }
         this.model.gameover(p2HandCards)
+        let node = new cc.Node()
+        this.node.addChild(node)
+        node.on(cc.Node.EventType.TOUCH_END, function(){ node.removeFromParent() })
+        let sp: cc.Sprite = node.addComponent(cc.Sprite)
+        switch(this.model.getGameResult())
+        {
+            case GameResult.Win: sp.spriteFrame = new cc.SpriteFrame(cc.url.raw("resources/result/win.jpg")); break;
+            case GameResult.Fail: sp.spriteFrame = new cc.SpriteFrame(cc.url.raw("resources/result/fail.jpg")); break
+            case GameResult.Draw: sp.spriteFrame = new cc.SpriteFrame(cc.url.raw("resources/result/draw.jpg")); break;
+        }
     }
 
     handlePlayerDeal(msg: any)
