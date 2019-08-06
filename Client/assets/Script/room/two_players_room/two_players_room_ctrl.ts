@@ -110,6 +110,7 @@ export default class TwoPlayersRoomCtrl extends cc.Component
         if (playerId != UserInfo.userId) { return }
         let p1Cards: number[] = msg["cards"]
         let p2Cards: number[] = []
+        this.cardHeap.decreaseCards(p1Cards.length)
         let cardsNumP2Want: number = 5 - this.model.getP2HandCardsNum()
         if (cardsNumP2Want > this.cardHeap.cardsNumLeft)
         {
@@ -120,7 +121,7 @@ export default class TwoPlayersRoomCtrl extends cc.Component
             p2Cards.push(0)
         }
         this.model.dispatchCards(p1Cards, p2Cards)
-        this.cardHeap.decreaseCards(p1Cards.length + p2Cards.length)
+        this.cardHeap.decreaseCards(p2Cards.length)
     }
 
     handleGameStart(msg: any)
@@ -146,7 +147,7 @@ export default class TwoPlayersRoomCtrl extends cc.Component
     handlePlayerDeal(msg: any)
     {
         if (msg["roomId"] != this.roomId) { return }
-        if (msg["playerId"] == UserInfo.userId) { return }
+        //if (msg["playerId"] == UserInfo.userId) { return }
         this.model.deal(msg["playerId"], msg["cards"])
     }
 
@@ -208,13 +209,21 @@ export default class TwoPlayersRoomCtrl extends cc.Component
     deal()
     {
         let cards: number[] = this.model.getPlayer1SelectedCards()
+        // 牌型合法性判断
         if (!CardComparator.isCardTypeLeagal(cards)) { return }
-        if (CardComparator.compare(cards, this.model.p2LatestCards) < 0) { return }
+        // 扯判断
+        let lastP1Cards: number[] = this.model.getP1LastThrownCards()
+        let lastP2Cards: number[] = this.model.getP2LastThrownCards()
+        let lvlLastP1Cards: number = CardComparator.getCardsLevel(lastP1Cards)
+        let lvlLastP2Cards: number = CardComparator.getCardsLevel(lastP2Cards)
+        if (lvlLastP1Cards == 1 && lvlLastP2Cards == 2 && lastP1Cards[0] == lastP2Cards[0])
+        {
+            let lvl: number = CardComparator.getCardsLevel(cards)
+            if (lvl != 5 && lvl != 4) { return }
+        }
+        // 其他大小比较判断
+        if (CardComparator.compare(cards, lastP2Cards) < 0) { return }
         var playerPassInd = {"msgId": OutMsgs.PLAYER_DEAL_IND, "playerId": UserInfo.userId, "roomId": this.roomId, "cards": cards}
         this.wsClient.sendMsg(playerPassInd)
-    }
-
-    cleanTheRoom()
-    {
     }
 }

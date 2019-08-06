@@ -11,6 +11,7 @@ export default class PlayerInRoom
     index: number = 0
     handCardMngr: HandCardManager = null
     abandonCardMngr: AbandonCardManager = null
+    lastThrownCardsInRound: number[] = []
     node: cc.Node = null
 
     constructor(isEnemy: boolean, node: cc.Node)
@@ -37,17 +38,20 @@ export default class PlayerInRoom
             return
         }
         this.node.getChildByName("status").getComponent(cc.Label).string = ""
+        this.lastThrownCardsInRound = []
     }
 
     deal(cards: number[])
     {
         this.handCardMngr.deal(cards)
         this.abandonCardMngr.abandonCards(cards)
+        this.lastThrownCardsInRound = cards
     }
 
     pass()
     {
         this.node.getChildByName("status").getComponent(cc.Label).string = "不要"
+        this.lastThrownCardsInRound = []
     }
 
     dispatchCards(cards: number[])
@@ -55,6 +59,7 @@ export default class PlayerInRoom
         this.node.getChildByName("status").getComponent(cc.Label).string = ""
         this.handCardMngr.dispatchCards(cards)
         this.abandonCardMngr.clear()
+        this.lastThrownCardsInRound = []
     }
 
     sitdown(playerId: number, index: number)

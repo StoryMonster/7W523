@@ -61,7 +61,6 @@ class Room:
         if not self.isPlayerInRoom(playerId):
             logging.error(f"player {playerId} is not in room {self.roomId}")
             return
-        uniCards = list(set(cards))
         msg = PlayerDealInd()
         for card in cards:
             self.scoreInRound += self.cardHeap.calcCardScore(card)
@@ -69,8 +68,6 @@ class Room:
             if index >= 0:
                 msg.cards.append(card)
                 del self.players[playerId].cards[index]
-        if len(self.players[playerId].cards) == 0:
-            self.players[playerId].isPassing = True
         msg.playerId = playerId
         msg.roomId = self.roomId
         self.broadcast(msg)

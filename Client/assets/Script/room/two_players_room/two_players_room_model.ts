@@ -6,7 +6,6 @@ export default class TwoPlayersRoomModel
 {
     private p1: PlayerInRoom = null
     private p2: PlayerInRoom = null
-    p2LatestCards: number[] = []
 
     constructor(p1Node: cc.Node, p2Node: cc.Node)
     {
@@ -22,7 +21,6 @@ export default class TwoPlayersRoomModel
     dispatchCards(p1Cards: number[], p2Cards: number[])
     {
         this.p1.dispatchCards(p1Cards)
-        this.p2LatestCards = []
         this.p2.dispatchCards(p2Cards)
     }
 
@@ -34,7 +32,6 @@ export default class TwoPlayersRoomModel
         } else if (playerId == this.p2.playerId)
         {
             this.p2.deal(cards)
-            this.p2LatestCards = cards
         }
     }
 
@@ -71,6 +68,8 @@ export default class TwoPlayersRoomModel
 
     gamestart()
     {
+        this.p1.score = 0
+        this.p2.score = 0
         this.p1.updateScore()
         this.p2.updateScore()
         this.p1.hideStatus()
@@ -81,6 +80,7 @@ export default class TwoPlayersRoomModel
     {
         this.p1.hideStatus()
         this.p2.hideStatus()
+        this.cleanPlayersData()
     }
 
     changePlayerScore(playerId: number, score: number)
@@ -127,5 +127,25 @@ export default class TwoPlayersRoomModel
     getPlayer1SelectedCards(): number[]
     {
         return this.p1.handCardMngr.getSelectedHandCards()
+    }
+
+    cleanPlayersData()
+    {
+        this.p1.hideScore()
+        this.p1.hideStatus()
+        this.p2.hideScore()
+        this.p2.hideStatus()
+        this.p1.lastThrownCardsInRound = []
+        this.p2.lastThrownCardsInRound = []
+    }
+
+    getP1LastThrownCards(): number[]
+    {
+        return this.p1.lastThrownCardsInRound
+    }
+
+    getP2LastThrownCards(): number[]
+    {
+        return this.p2.lastThrownCardsInRound
     }
 }

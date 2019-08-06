@@ -45,11 +45,13 @@ export default class EnemyHandCardManager extends HandCardManager
 
     deal(cards: number[])
     {
-        for (let _ of cards)
+        for (let i: number = 0; i < cards.length; ++i)
         {
-            this.cards[0].removeFromParent()
-            this.cards.splice(0, 1)
+            this.cards[i].removeFromParent()
         }
+        this.cards.splice(0, cards.length)
         this.arrangeCards()
     }
+
+    getHandCardsNum(): number { return this.cards.length }
 }
