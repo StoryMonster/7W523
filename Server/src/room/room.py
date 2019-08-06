@@ -22,11 +22,11 @@ class Room:
     def handlePlayerJoinRoom(self, player):
         playerId = player.playerId
         if self.isPlayerInRoom(playerId):
-            logging.error(f"player {playerId} is already in room {self.roomId}")
+            logging.error(f"[room={self.roomId}] player {playerId} is already in room")
         else:
             index = self.generatePlayerIndex()
             self.players[playerId] = PlayerInRoom(player, index)
-        logging.info(f"player {playerId} enter room {self.roomId}")
+        logging.info(f"[room={self.roomId}] player {playerId} enter room")
         self.sendRoomInfoInd(player)
         msg = PlayerJoinRoomInd()
         msg.playerInfo = PublicPlayerInfoInRoom(playerId, self.roomId, self.players[playerId].index, self.players[playerId].isReady)
@@ -35,21 +35,21 @@ class Room:
     def handlePlayerLeaveRoom(self, player):
         playerId = player.playerId
         if not self.isPlayerInRoom(playerId):
-            logging.error(f"player {playerId} is not in room {self.roomId}")
+            logging.error(f"[room={self.roomId}] player {playerId} is not in room")
             return
         msg = PlayerLeaveRoomInd()
         msg.playerInfo = PublicPlayerInfoInRoom(playerId, self.roomId, self.players[playerId].index, self.players[playerId].isReady)
         del self.players[playerId]
-        logging.info(f"player {playerId} left room {self.roomId}")
+        logging.info(f"[room={self.roomId}] player {playerId} left room")
         self.broadcast(msg)
 
     def handlePlayerReady(self, player):
         playerId = player.playerId
         if not self.isPlayerInRoom(playerId):
-            logging.error(f"player {playerId} is not in room {self.roomId}")
+            logging.error(f"[room={self.roomId}] player {playerId} is not in room")
             return
         self.players[playerId].isReady = not self.players[playerId].isReady
-        logging.info(f"player {playerId} changed ready status in room {self.roomId}, ready: {self.players[playerId].isReady}")
+        logging.info(f"[room={self.roomId}] player {playerId}, ready: {self.players[playerId].isReady}")
         msg = PlayerReadyInd()
         msg.playerInfo = PublicPlayerInfoInRoom(playerId, self.roomId, self.players[playerId].index, self.players[playerId].isReady)
         self.broadcast(msg)
@@ -59,7 +59,7 @@ class Room:
     def handlePlayerDeal(self, player, cards):
         playerId = player.playerId
         if not self.isPlayerInRoom(playerId):
-            logging.error(f"player {playerId} is not in room {self.roomId}")
+            logging.error(f"[room={self.roomId}] player {playerId} is not in room")
             return
         msg = PlayerDealInd()
         for card in cards:
@@ -68,6 +68,7 @@ class Room:
             if index >= 0:
                 msg.cards.append(card)
                 del self.players[playerId].cards[index]
+        logging.debug(f"[room={self.roomId}] player {playerId} deal: {cards}")
         msg.playerId = playerId
         msg.roomId = self.roomId
         self.broadcast(msg)
@@ -84,8 +85,9 @@ class Room:
     def handlePlayerPass(self, player):
         playerId = player.playerId
         if not self.isPlayerInRoom(playerId):
-            logging.error(f"player {playerId} is not in room {self.roomId}")
+            logging.error(f"[room={self.roomId}] player {playerId} is not in room")
             return
+        logging.debug(f"[room={self.roomId}] player {playerId} pass")
         msg = PlayerPassInd()
         msg.roomId = self.roomId
         msg.playerId = playerId
@@ -116,13 +118,26 @@ class Room:
     def dispatchCards(self):
         msg = DispatchCardsInd()
         msg.roomId = self.roomId
-        for id in self.players:
-            cardsNumNeeded = 5 - len(self.players[id].cards)
+
+        for i in range(self.currentDealIndex, self.maxPlayerNum):
+            player = self.getPlayerByIndex(i)
+            cardsNumNeeded = 5 - len(player.cards)
             cards = self.cardHeap.getCards(cardsNumNeeded)
             msg.cards = cards
-            msg.playerId = id
-            self.players[id].sendMsg(msg.serialize())
-            self.players[id].cards.extend(cards)
+            msg.playerId = player.getId()
+            player.sendMsg(msg.serialize())
+            player.cards.extend(cards)
+            logging.debug(f"[room={self.roomId}] player {msg.playerId} handcards: {player.cards}")
+        
+        for i in range(0, self.currentDealIndex):
+            player = self.getPlayerByIndex(i)
+            cardsNumNeeded = 5 - len(player.cards)
+            cards = self.cardHeap.getCards(cardsNumNeeded)
+            msg.cards = cards
+            msg.playerId = player.getId()
+            player.sendMsg(msg.serialize())
+            player.cards.extend(cards)
+            logging.debug(f"[room={self.roomId}] player {msg.playerId} handcards: {player.cards}")
 
     def generatePlayerIndex(self):
         idxs = [0 for i in range(self.maxPlayerNum)]
@@ -170,7 +185,7 @@ class Room:
             self.players[id].isPassing = False
 
     def startGame(self):
-        logging.info(f"The game start in room {self.roomId}")
+        logging.info(f"[room={self.roomId}] game start")
         msg = GameStartInd()
         msg.roomId = self.roomId
         self.broadcast(msg)
@@ -249,8 +264,10 @@ class Room:
         self.scoreInRound = 0
         gameoverInd = GameOverInd()
         gameoverInd.roomId = self.roomId
+        logging.debug(f"[room={self.roomId}] game over")
         for id in self.players:
             gameoverInd.res.append(PlayerGameResult(id, self.players[id].cards, self.players[id].score))
+            logging.debug(f"[room={self.roomId}] player {id} handcards: {self.players[id].cards}  score: {self.players[id].score}")
         self.broadcast(gameoverInd)
         self.resetAllPlayersStatus()
 

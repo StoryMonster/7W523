@@ -74,12 +74,15 @@ export default class TwoPlayersRoomModel
         this.p2.updateScore()
         this.p1.hideStatus()
         this.p2.hideStatus()
+        this.p1.handCardMngr.setHandCards([])
+        this.p1.abandonCardMngr.clear()
+        this.p2.handCardMngr.setHandCards([])
+        this.p2.abandonCardMngr.clear()
     }
 
-    gameover()
+    gameover(p2HandCards: number[])
     {
-        this.p1.hideStatus()
-        this.p2.hideStatus()
+        this.p2.handCardMngr.setHandCards(p2HandCards)
         this.cleanPlayersData()
     }
 

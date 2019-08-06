@@ -22,4 +22,6 @@ export default class HandCardManager
     {}
 
     getSelectedHandCards(): number[] { return [] }
+
+    setHandCards(cards: number[]){}
 }

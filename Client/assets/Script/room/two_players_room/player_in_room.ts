@@ -43,9 +43,9 @@ export default class PlayerInRoom
 
     deal(cards: number[])
     {
+        this.lastThrownCardsInRound = cards
         this.handCardMngr.deal(cards)
         this.abandonCardMngr.abandonCards(cards)
-        this.lastThrownCardsInRound = cards
     }
 
     pass()

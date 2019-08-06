@@ -2,7 +2,6 @@ import Card from "./card"
 
 export default class HandCard extends Card
 {
-    public isSelected: boolean = false
 
     constructor(value: number)
     {
@@ -15,12 +14,15 @@ export default class HandCard extends Card
         if (this.y != 0)
         {
             this.y = 0
-            this.isSelected = false
         }
         else
         {
-            this.y += 20
-            this.isSelected = true
+            this.y = 20
         }
+    }
+
+    isSelected(): boolean
+    {
+        return this.y != 0
     }
 }

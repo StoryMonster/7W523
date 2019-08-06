@@ -131,6 +131,8 @@ export default class TwoPlayersRoomCtrl extends cc.Component
         this.node.getChildByName("player1").getChildByName("leave").active = false
         this.node.getChildByName("player1").getChildByName("pass").active = true
         this.node.getChildByName("player1").getChildByName("deal").active = true
+        this.cardHeap.cardsNumLeft = 54
+        this.cardHeap.decreaseCards(0)
         this.model.gamestart()
     }
 
@@ -141,7 +143,16 @@ export default class TwoPlayersRoomCtrl extends cc.Component
         this.node.getChildByName("player1").getChildByName("leave").active = true
         this.node.getChildByName("player1").getChildByName("pass").active = false
         this.node.getChildByName("player1").getChildByName("deal").active = false
-        this.model.gameover()
+        let p2HandCards: number[] = []
+        for (let playerInfo of msg["res"])
+        {
+            if (playerInfo["playerId"] != UserInfo.userId)
+            {
+                p2HandCards = playerInfo["cards"]
+                break
+            }
+        }
+        this.model.gameover(p2HandCards)
     }
 
     handlePlayerDeal(msg: any)
@@ -216,13 +227,13 @@ export default class TwoPlayersRoomCtrl extends cc.Component
         let lastP2Cards: number[] = this.model.getP2LastThrownCards()
         let lvlLastP1Cards: number = CardComparator.getCardsLevel(lastP1Cards)
         let lvlLastP2Cards: number = CardComparator.getCardsLevel(lastP2Cards)
-        if (lvlLastP1Cards == 1 && lvlLastP2Cards == 2 && lastP1Cards[0] == lastP2Cards[0])
+        let lvl: number = CardComparator.getCardsLevel(cards)
+        if (lvlLastP1Cards == 1 && lvlLastP2Cards == 2 && lastP1Cards[0] % 13 == lastP2Cards[0] % 13)
         {
-            let lvl: number = CardComparator.getCardsLevel(cards)
             if (lvl != 5 && lvl != 4) { return }
         }
-        // 其他大小比较判断
-        if (CardComparator.compare(cards, lastP2Cards) < 0) { return }
+        else if (lvlLastP2Cards == 1 && lvl == 2 && cards[0] % 13 != lastP2Cards[0] % 13) { return }
+        else if (CardComparator.compare(cards, lastP2Cards) < 0) { return }
         var playerPassInd = {"msgId": OutMsgs.PLAYER_DEAL_IND, "playerId": UserInfo.userId, "roomId": this.roomId, "cards": cards}
         this.wsClient.sendMsg(playerPassInd)
     }

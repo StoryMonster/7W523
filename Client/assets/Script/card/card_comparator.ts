@@ -41,14 +41,14 @@ export default class CardComparator
         let lvl2: number = CardComparator.getCardsLevel(cards2)
         if (lvl1 == 0) { return -1}
         if (lvl2 == 0) { return 1}
+        let rankTable: number[] = [7, 54, 53, 5, 2, 3, 1, 0, 12, 11, 10, 9, 8, 6, 4]
         // 单牌判断
         if (lvl1 == 1 && lvl2 == 1)
         {
-            let singleRankTable: number[] = [7, 54, 53, 5, 2, 3, 1, 0, 12, 11, 10, 9, 8, 6, 4]
             let val2: number = (cards2[0] >= 53) ? cards2[0] : cards2[0] % 13
             let val1: number = (cards1[0] >= 53) ? cards1[0] : cards1[0] % 13
             if (val1 == val2) { return 0 }
-            for (let val of singleRankTable)
+            for (let val of rankTable)
             {
                 if (val == val1) { return 1 }
                 if (val == val2) { return -1 }
@@ -68,8 +68,7 @@ export default class CardComparator
         if (lvl1 == lvl2)
         {
             if (cards2[0] % 13 == cards1[0] % 13) { return 0 }
-            let otherRankTable: number[] = [7, 5, 2, 3, 1, 0, 12, 11, 10, 9, 8, 6, 4]
-            for (let val of otherRankTable)
+            for (let val of rankTable)
             {
                 if (val == cards2[0]%13) { return -1 }
                 if (val == cards1[0]%13) { return 1 } 

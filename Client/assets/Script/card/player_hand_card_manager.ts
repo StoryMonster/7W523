@@ -24,6 +24,17 @@ export default class PlayerHandCardManager extends HandCardManager
 
     arrangeCards()
     {
+        this.cards.sort(function(a, b): number{
+            let rankTable: number[] = [7, 54, 53, 5, 2, 3, 1, 0, 12,11, 10, 9, 8, 6, 4]
+            let aVal = (a.value >= 53) ? a.value : (a.value % 13)
+            let bVal = (b.value >= 53) ? b.value : (b.value % 13)
+            if (aVal == bVal) { return 0 }
+            for (let val of rankTable)
+            {
+                if (val == aVal) { return -1 }
+                if (val == bVal) { return 1 }
+            }
+        })
         let cardsNum: number = this.cards.length
         if (cardsNum <= 0) { return }
         let uncorverWidthEachCard: number = 50
@@ -60,11 +71,18 @@ export default class PlayerHandCardManager extends HandCardManager
         let cards: number[] = []
         for (let card of this.cards)
         {
-            if (card.isSelected)
+            if (card.isSelected())
             {
                 cards.push(card.value)
             }
         }
         return cards
+    }
+
+    setHandCards(cards: number[])
+    {
+        this.node.removeAllChildren()
+        this.cards = []
+        this.dispatchCards(cards)
     }
 }
